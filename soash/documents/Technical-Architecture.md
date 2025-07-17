@@ -15,11 +15,16 @@ This document defines the technical architecture for the Soash platform, a lean 
 - **Framework**: React 18 with TypeScript
 - **Build Tool**: Vite (fast development and build)
 - **Styling**: Tailwind CSS (utility-first CSS framework)
+- **UI Components**: shadcn/ui + Custom atomic design library
+- **Component Architecture**: Atomic design (atoms, molecules, organisms, templates, pages)
 - **State Management**: React Query + React Context
 - **Routing**: React Router v6
 - **Forms**: React Hook Form
 - **Charts**: Recharts (simple charting library)
+- **Icons**: Lucide React
+- **Utilities**: class-variance-authority, clsx, tailwind-merge
 - **HTTP Client**: Axios with interceptors
+- **Design Tokens**: CSS variables + Tailwind configuration
 
 ### Backend
 - **Runtime**: Node.js 18+
@@ -112,6 +117,72 @@ src/
 ├── contexts/            # React contexts
 ├── stories/             # Storybook stories (organized by atomic level)
 └── assets/              # Static assets
+```
+
+### Package Dependencies
+
+#### Core Frontend Dependencies
+```json
+{
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.8.0",
+    "@tanstack/react-query": "^4.24.0",
+    "@radix-ui/react-accordion": "^1.1.2",
+    "@radix-ui/react-alert-dialog": "^1.0.5",
+    "@radix-ui/react-avatar": "^1.0.4",
+    "@radix-ui/react-dialog": "^1.0.5",
+    "@radix-ui/react-dropdown-menu": "^2.0.6",
+    "@radix-ui/react-label": "^2.0.2",
+    "@radix-ui/react-select": "^2.0.0",
+    "@radix-ui/react-separator": "^1.0.3",
+    "@radix-ui/react-sheet": "^1.0.4",
+    "@radix-ui/react-slot": "^1.0.2",
+    "@radix-ui/react-tabs": "^1.0.4",
+    "@radix-ui/react-tooltip": "^1.0.7",
+    "lucide-react": "^0.263.1",
+    "recharts": "^2.8.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "tailwind-merge": "^1.14.0",
+    "react-hook-form": "^7.43.0",
+    "axios": "^1.3.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "tailwindcss": "^3.3.0",
+    "typescript": "^5.0.0",
+    "vite": "^4.4.0",
+    "eslint": "^8.45.0",
+    "prettier": "^3.0.0"
+  }
+}
+```
+
+#### shadcn/ui Configuration
+```json
+{
+  "style": "default",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "tailwind.config.ts",
+    "css": "src/index.css",
+    "baseColor": "slate",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "aliases": {
+    "components": "@/components",
+    "utils": "@/lib/utils",
+    "ui": "@/components/ui",
+    "lib": "@/lib",
+    "hooks": "@/hooks"
+  }
+}
 ```
 
 #### Backend Structure

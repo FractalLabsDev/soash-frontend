@@ -518,6 +518,79 @@ git push origin hotfix/rollback-deployment
 
 ---
 
+## Component Development Workflow
+
+### shadcn/ui + Atomic Design Integration
+
+#### Component Creation Process
+```bash
+# Step 1: Check if shadcn/ui component exists
+# Visit https://ui.shadcn.com/docs/components to check available components
+
+# Step 2: Install shadcn/ui component (if available)
+npx shadcn-ui@latest add button
+
+# Step 3: Create atomic design wrapper structure
+mkdir src/components/atoms/Button
+touch src/components/atoms/Button/Button.tsx
+touch src/components/atoms/Button/Button.stories.tsx
+touch src/components/atoms/Button/Button.test.tsx
+touch src/components/atoms/Button/index.ts
+
+# Step 4: Implement atomic wrapper
+# Step 5: Add Storybook stories with prototype examples
+# Step 6: Write comprehensive tests
+# Step 7: Update design system documentation
+```
+
+#### Component Integration Guidelines
+1. **Check shadcn/ui First**: Always check if shadcn/ui has the component before building custom
+2. **Maintain Prototype Fidelity**: Ensure visual appearance matches stakeholder-approved prototype
+3. **Preserve Accessibility**: Keep all shadcn/ui accessibility features intact
+4. **Follow Atomic Design**: Wrap shadcn components in appropriate atomic level
+5. **Document Changes**: Update Storybook and design system docs
+6. **Test Thoroughly**: Test both shadcn behavior and atomic design compliance
+
+#### Example: Button Atom Implementation
+```typescript
+// src/components/atoms/Button/Button.tsx
+import { forwardRef } from 'react'
+import { Button as ShadcnButton } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import type { ButtonProps as ShadcnButtonProps } from '@/components/ui/button'
+
+interface ButtonProps extends ShadcnButtonProps {
+  // Add any additional props for atomic design compliance
+}
+
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, ...props }, ref) => {
+    return (
+      <ShadcnButton
+        ref={ref}
+        className={cn(
+          "transition-all duration-200", // Add prototype fidelity enhancements
+          className
+        )}
+        {...props}
+      />
+    )
+  }
+)
+
+Button.displayName = "Button"
+```
+
+#### Prototype Fidelity Checklist
+- [ ] Visual appearance matches prototype design
+- [ ] Hover states match prototype interactions
+- [ ] Spacing and sizing align with prototype measurements
+- [ ] Typography follows prototype font choices
+- [ ] Color usage matches prototype palette
+- [ ] Responsive behavior matches prototype breakpoints
+
+---
+
 ## Code Quality Standards
 
 ### Code Style Guidelines

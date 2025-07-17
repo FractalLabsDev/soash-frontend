@@ -1,0 +1,292 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Base colors from prototype */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    
+    /* Primary colors - dark blue from prototype */
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    
+    /* Secondary colors - light backgrounds */
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    
+    /* Muted - subtle backgrounds and text */
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    
+    /* Accent - hover states and highlights */
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    
+    /* State colors */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    
+    /* Border and input colors */
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    
+    /* Border radius */
+    --radius: 0.5rem;
+    
+    /* Sidebar colors from prototype */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  
+  /* Typography hierarchy from prototype */
+  h1 {
+    @apply text-2xl font-bold text-gray-900;
+  }
+  
+  h2 {
+    @apply text-xl font-semibold text-gray-900;
+  }
+  
+  h3 {
+    @apply text-lg font-medium text-gray-900;
+  }
+  
+  p {
+    @apply text-sm text-gray-600;
+  }
+  
+  /* Focus states */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
+  }
+  
+  /* Custom focus for interactive elements */
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [role="button"]:focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2;
+  }
+}
+
+@layer components {
+  /* Button components from prototype */
+  .btn-primary {
+    @apply bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700;
+    @apply text-white font-medium px-6 py-3 rounded-lg;
+    @apply transition-all duration-200 ease-in-out;
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  .btn-secondary {
+    @apply bg-white border border-gray-200 text-gray-900;
+    @apply font-medium px-6 py-3 rounded-lg;
+    @apply hover:bg-gray-50 hover:border-gray-300;
+    @apply transition-all duration-200 ease-in-out;
+    @apply focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  /* Card components from prototype */
+  .card-base {
+    @apply bg-white rounded-xl border border-gray-200 p-6;
+    @apply hover:shadow-lg transition-all duration-200;
+  }
+  
+  .card-metric {
+    @apply card-base text-center space-y-3;
+  }
+  
+  .card-insight {
+    @apply card-base space-y-4;
+  }
+  
+  /* Insight card variants from prototype */
+  .insight-content {
+    @apply bg-blue-50 text-blue-700 border-blue-200;
+  }
+  
+  .insight-timing {
+    @apply bg-green-50 text-green-700 border-green-200;
+  }
+  
+  .insight-strategy {
+    @apply bg-purple-50 text-purple-700 border-purple-200;
+  }
+  
+  /* Layout patterns from prototype */
+  .container-main {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  .grid-auto-fit {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+  }
+  
+  .flex-center {
+    @apply flex items-center justify-center;
+  }
+  
+  .flex-between {
+    @apply flex items-center justify-between;
+  }
+  
+  /* Spacing patterns from prototype */
+  .stack-sm {
+    @apply space-y-2;
+  }
+  
+  .stack-md {
+    @apply space-y-4;
+  }
+  
+  .stack-lg {
+    @apply space-y-6;
+  }
+  
+  .stack-xl {
+    @apply space-y-8;
+  }
+  
+  /* Animation helpers */
+  .animate-fadeIn {
+    @apply animate-fade-in;
+  }
+  
+  .animate-slideUp {
+    @apply animate-slide-up;
+  }
+  
+  /* Hover effects from prototype */
+  .hover-lift {
+    @apply transition-transform duration-200 ease-out hover:-translate-y-1;
+  }
+  
+  .hover-scale {
+    @apply transition-transform duration-200 ease-out hover:scale-105;
+  }
+  
+  /* Text utilities matching prototype patterns */
+  .text-heading-1 {
+    @apply text-2xl font-bold text-gray-900;
+  }
+  
+  .text-heading-2 {
+    @apply text-xl font-semibold text-gray-900;
+  }
+  
+  .text-heading-3 {
+    @apply text-lg font-medium text-gray-900;
+  }
+  
+  .text-body {
+    @apply text-sm text-gray-600;
+  }
+  
+  .text-caption {
+    @apply text-xs text-gray-500;
+  }
+  
+  /* Performance indicator colors from prototype */
+  .indicator-high {
+    @apply text-green-600 bg-green-50;
+  }
+  
+  .indicator-medium {
+    @apply text-yellow-600 bg-yellow-50;
+  }
+  
+  .indicator-low {
+    @apply text-red-600 bg-red-50;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  /* Custom gradient utilities */
+  .bg-gradient-primary {
+    @apply bg-gradient-to-r from-blue-500 to-purple-600;
+  }
+  
+  .bg-gradient-primary-hover {
+    @apply bg-gradient-to-r from-blue-600 to-purple-700;
+  }
+  
+  /* Shadow utilities */
+  .shadow-card {
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  }
+  
+  .shadow-card-hover {
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  }
+  
+  /* Border utilities */
+  .border-card {
+    @apply border border-gray-200;
+  }
+  
+  .border-card-hover {
+    @apply border border-gray-300;
+  }
+}

@@ -2,11 +2,13 @@
 
 ## Overview
 
-This document defines the design system and UI guidelines for the Soash platform. It establishes consistent visual patterns, component standards, and design principles to ensure a cohesive user experience across all interfaces.
+This document defines the design system and UI guidelines for the Soash platform. It establishes consistent visual patterns, component standards, and design principles to ensure a cohesive user experience across all interfaces. This system integrates stakeholder-approved prototype designs with atomic design principles and shadcn/ui components.
 
 **Design Philosophy**: Clean, modern, data-focused
 **Target Audience**: Content creators and business owners
 **Brand Personality**: Professional, intelligent, approachable
+**Component Architecture**: Atomic design with shadcn/ui foundation
+**Design Source**: Stakeholder-approved clickable prototype
 
 ---
 
@@ -34,34 +36,51 @@ This document defines the design system and UI guidelines for the Soash platform
 
 ## Color Palette
 
-### Primary Colors
+### Primary Colors (From Prototype)
 ```css
-/* Primary Blue - Main brand color */
---color-primary-50: #eff6ff
---color-primary-100: #dbeafe
---color-primary-200: #bfdbfe
---color-primary-300: #93c5fd
---color-primary-400: #60a5fa
---color-primary-500: #3b82f6  /* Primary */
---color-primary-600: #2563eb
---color-primary-700: #1d4ed8
---color-primary-800: #1e40af
---color-primary-900: #1e3a8a
+/* Primary - Dark blue from prototype */
+--color-primary: hsl(222.2 47.4% 11.2%)
+--color-primary-foreground: hsl(210 40% 98%)
+
+/* Primary scale for variations */
+--color-primary-50: #f8fafc
+--color-primary-100: #f1f5f9
+--color-primary-200: #e2e8f0
+--color-primary-300: #cbd5e1
+--color-primary-400: #94a3b8
+--color-primary-500: hsl(222.2 47.4% 11.2%)  /* Primary from prototype */
+--color-primary-600: #475569
+--color-primary-700: #334155
+--color-primary-800: #1e293b
+--color-primary-900: #0f172a
 ```
 
-### Secondary Colors
+### Secondary Colors (From Prototype)
 ```css
-/* Neutral Gray - Text and backgrounds */
---color-gray-50: #f9fafb
---color-gray-100: #f3f4f6
---color-gray-200: #e5e7eb
---color-gray-300: #d1d5db
---color-gray-400: #9ca3af
---color-gray-500: #6b7280
---color-gray-600: #4b5563
---color-gray-700: #374151
---color-gray-800: #1f2937
---color-gray-900: #111827
+/* Secondary - Light backgrounds */
+--color-secondary: hsl(210 40% 96.1%)
+--color-secondary-foreground: hsl(222.2 47.4% 11.2%)
+
+/* Muted - Subtle backgrounds and text */
+--color-muted: hsl(210 40% 96.1%)
+--color-muted-foreground: hsl(215.4 16.3% 46.9%)
+
+/* Accent - Hover states and highlights */
+--color-accent: hsl(210 40% 96.1%)
+--color-accent-foreground: hsl(222.2 47.4% 11.2%)
+
+/* Base colors */
+--color-background: hsl(0 0% 100%)
+--color-foreground: hsl(222.2 84% 4.9%)
+--color-card: hsl(0 0% 100%)
+--color-card-foreground: hsl(222.2 84% 4.9%)
+--color-popover: hsl(0 0% 100%)
+--color-popover-foreground: hsl(222.2 84% 4.9%)
+
+/* Borders and inputs */
+--color-border: hsl(214.3 31.8% 91.4%)
+--color-input: hsl(214.3 31.8% 91.4%)
+--color-ring: hsl(222.2 84% 4.9%)
 ```
 
 ### Semantic Colors
@@ -191,13 +210,38 @@ This document defines the design system and UI guidelines for the Soash platform
 ## Atomic Design Component Library
 
 ### Overview
-Our component library follows atomic design principles, organizing components into five distinct levels:
+Our component library follows atomic design principles, organizing components into five distinct levels. Components are built using shadcn/ui as a foundation, providing excellent accessibility and proven patterns while maintaining our atomic design structure.
 
-1. **Atoms** - Basic building blocks (buttons, inputs, labels)
-2. **Molecules** - Simple combinations of atoms (form fields, search boxes)
-3. **Organisms** - Complex components made of molecules/atoms (navigation, forms)
-4. **Templates** - Page-level layouts with placeholders
+1. **Atoms** - Basic building blocks (shadcn/ui primitives: buttons, inputs, labels)
+2. **Molecules** - Simple combinations of atoms (form fields, metric cards, search boxes)
+3. **Organisms** - Complex components made of molecules/atoms (navigation, forms, dashboards)
+4. **Templates** - Page-level layouts with placeholders (dashboard, auth layouts)
 5. **Pages** - Specific instances of templates with real content
+
+### shadcn/ui Integration Strategy
+
+**Foundation Layer**: shadcn/ui components provide the accessible, well-tested foundation
+**Atomic Wrapper Layer**: Custom atomic design wrappers add business logic and design system compliance
+**Composition Layer**: Molecules and organisms compose atoms following atomic design principles
+
+```typescript
+// Example: Button atom wrapping shadcn/ui
+import { Button as ShadcnButton } from "@/components/ui/button"
+
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ variant = "default", size = "default", ...props }, ref) => {
+    return (
+      <ShadcnButton
+        ref={ref}
+        variant={variant}
+        size={size}
+        className={cn("transition-all duration-200", props.className)}
+        {...props}
+      />
+    )
+  }
+)
+```
 
 ---
 

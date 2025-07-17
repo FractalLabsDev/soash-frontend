@@ -83,9 +83,9 @@ describe('Button Component', () => {
 
 ### Atomic Design Testing Approach
 
-#### Atoms Testing
+#### Atoms Testing (shadcn/ui Integration)
 ```typescript
-// Example: Button Atom Test
+// Example: Button Atom Test (wrapping shadcn/ui)
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Button } from '../atoms/Button/Button';
 
@@ -103,14 +103,26 @@ describe('Button Atom', () => {
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
-  it('applies correct variant classes', () => {
-    render(<Button variant="primary">Primary</Button>);
-    expect(screen.getByRole('button')).toHaveClass('btn-primary');
+  it('applies shadcn/ui variant classes correctly', () => {
+    render(<Button variant="destructive">Delete</Button>);
+    expect(screen.getByRole('button')).toHaveClass('bg-destructive');
   });
 
-  it('is accessible', () => {
+  it('maintains shadcn/ui accessibility features', () => {
     render(<Button disabled>Disabled</Button>);
     expect(screen.getByRole('button')).toBeDisabled();
+    expect(screen.getByRole('button')).toHaveAttribute('aria-disabled', 'true');
+  });
+
+  it('preserves shadcn/ui behavior while adding atomic design compliance', () => {
+    render(<Button size="sm" variant="outline">Small Button</Button>);
+    expect(screen.getByRole('button')).toHaveClass('h-9'); // shadcn small size
+    expect(screen.getByRole('button')).toHaveClass('border'); // shadcn outline variant
+  });
+
+  it('supports custom className overrides', () => {
+    render(<Button className="custom-class">Custom</Button>);
+    expect(screen.getByRole('button')).toHaveClass('custom-class');
   });
 });
 ```
@@ -884,6 +896,51 @@ A feature is considered complete when:
 
 ---
 
+### shadcn/ui Testing Considerations
+
+#### Testing Strategy for shadcn/ui Components
+```typescript
+// Testing approach for atomic wrappers around shadcn/ui
+describe('shadcn/ui Integration Tests', () => {
+  it('preserves shadcn/ui accessibility features', () => {
+    // Test that ARIA attributes and keyboard navigation still work
+  });
+  
+  it('maintains shadcn/ui styling while allowing customization', () => {
+    // Test that base shadcn styles apply but can be overridden
+  });
+  
+  it('supports all shadcn/ui variants and sizes', () => {
+    // Test that all shadcn variant props work correctly
+  });
+  
+  it('handles shadcn/ui ref forwarding correctly', () => {
+    // Test that refs are properly forwarded to DOM elements
+  });
+});
+```
+
+#### Prototype Fidelity Testing
+```typescript
+// Test prototype visual consistency
+describe('Prototype Fidelity', () => {
+  it('matches prototype visual appearance', () => {
+    // Use visual regression testing tools
+    // Compare rendered components to prototype screenshots
+  });
+  
+  it('maintains responsive behavior from prototype', () => {
+    // Test breakpoint behavior matches prototype
+  });
+  
+  it('preserves prototype interaction patterns', () => {
+    // Test hover states, animations, transitions match prototype
+  });
+});
+```
+
+---
+
 ## Testing Tools & Libraries
 
 ### Frontend Testing
@@ -892,6 +949,8 @@ A feature is considered complete when:
 - **@testing-library/jest-dom**: Custom Jest matchers
 - **@testing-library/user-event**: User interaction simulation
 - **MSW (Mock Service Worker)**: API mocking
+- **@storybook/test-runner**: Visual regression testing via Storybook
+- **chromatic**: Visual testing for Storybook components
 
 ### Backend Testing
 - **Jest**: JavaScript testing framework

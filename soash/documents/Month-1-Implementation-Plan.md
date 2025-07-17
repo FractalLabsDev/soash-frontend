@@ -19,6 +19,9 @@ This detailed implementation plan covers the first month of the Soash developmen
 
 **Tasks:**
 - [ ] Initialize React TypeScript project with Vite
+- [ ] Install and configure shadcn/ui component library
+- [ ] Set up components.json configuration for shadcn/ui
+- [ ] Install core dependencies (Lucide React, Recharts, CVA, clsx, tailwind-merge)
 - [ ] Set up monorepo structure (frontend/backend)
 - [ ] Configure TypeScript configs for both projects
 - [ ] Set up ESLint and Prettier configurations
@@ -26,10 +29,11 @@ This detailed implementation plan covers the first month of the Soash developmen
 - [ ] Create basic README and contributing guidelines
 
 **Deliverables:**
-- Working React app with TypeScript
+- Working React app with TypeScript and Vite
+- shadcn/ui configured with atomic design structure
 - Node.js backend with Express and TypeScript
 - Consistent code formatting and linting
-- Basic project structure
+- Basic project structure with component library setup
 
 **Success Criteria:**
 - Both projects start successfully
@@ -63,21 +67,25 @@ This detailed implementation plan covers the first month of the Soash developmen
 **Developer Assignment**: Frontend Developer 1 + Frontend Developer 2
 
 **Tasks:**
-- [ ] Install and configure Tailwind CSS
-- [ ] Create design system components using atomic design principles (atoms, molecules, organisms)
+- [ ] Install and configure Tailwind CSS with prototype design tokens
+- [ ] Extract color palette, typography, and spacing from prototype
+- [ ] Create atomic design components using shadcn/ui as foundation (atoms, molecules, organisms)
 - [ ] Set up component library structure with atomic design organization
-- [ ] Create typography and color system
-- [ ] Implement basic layout components
+- [ ] Configure prototype design system tokens in Tailwind config
+- [ ] Implement basic layout components using prototype patterns
 - [ ] Set up React Router for navigation
-- [ ] Create basic page templates
+- [ ] Create basic page templates matching prototype layouts
 - [ ] Build interactive design system and component library page for team reference
+- [ ] Install and configure Storybook for component documentation
 
 **Deliverables:**
-- Tailwind CSS configured with custom design system
-- Atomic design-based UI component library (atoms, molecules, organisms)
-- Navigation structure
-- Layout templates
-- Interactive design system documentation page
+- Tailwind CSS configured with prototype design tokens
+- shadcn/ui integrated with atomic design-based component library
+- Prototype-faithful UI components (atoms, molecules, organisms)
+- Navigation structure matching prototype patterns
+- Layout templates based on prototype layouts
+- Interactive design system documentation page with Storybook
+- Prototype design token documentation
 
 **Success Criteria:**
 - Design system renders correctly
