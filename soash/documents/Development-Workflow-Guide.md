@@ -4,9 +4,10 @@
 
 This document outlines the development workflow, processes, and best practices for the Soash development team during the 3-month lean sprint. It covers Git workflow, code review processes, deployment procedures, and team collaboration guidelines.
 
-**Workflow Philosophy**: Fast iteration with quality gates
+**Workflow Philosophy**: Fast iteration with quality gates  
 **Approach**: Streamlined processes that don't slow down development
 **Team Size**: 6 developers working in parallel
+**Architecture**: Separate frontend and backend repositories
 
 ---
 
@@ -14,13 +15,23 @@ This document outlines the development workflow, processes, and best practices f
 
 ### Branch Strategy
 
-#### Main Branches
+#### Frontend Repository (This Repo)
 ```
 main
 ├── develop
 ├── feature/user-authentication
-├── feature/instagram-integration
-├── feature/dashboard-analytics
+├── feature/api-integration
+├── feature/dashboard-ui
+└── hotfix/security-patch
+```
+
+#### Backend Repository (Separate)
+```
+main (soash-backend)
+├── develop
+├── feature/user-endpoints
+├── feature/social-apis
+├── feature/email-service
 └── hotfix/security-patch
 ```
 
@@ -31,17 +42,32 @@ main
 - **Release branches**: `release/v1.0.0`
 
 #### Workflow Process
-1. **Create Feature Branch**: Branch from `develop`
+
+**For Frontend Development:**
+1. **Create Feature Branch**: Branch from `develop` in frontend repo
 2. **Development**: Work on feature branch
-3. **Pull Request**: Create PR to `develop`
-4. **Code Review**: Team review and approval
-5. **Merge**: Squash and merge to `develop`
-6. **Deploy to Staging**: Automatic deployment
-7. **Release**: Merge `develop` to `main` for production
+3. **Backend Integration**: Coordinate with backend team for API changes
+4. **Pull Request**: Create PR to `develop` in frontend repo
+5. **Code Review**: Team review and approval
+6. **Merge**: Squash and merge to `develop`
+7. **Deploy to Staging**: Automatic deployment
+8. **Release**: Merge `develop` to `main` for production
+
+**For Backend Development:**
+1. **Create Feature Branch**: Branch from `develop` in backend repo
+2. **Development**: Work on feature branch
+3. **API Documentation**: Update API docs for frontend team
+4. **Pull Request**: Create PR to `develop` in backend repo
+5. **Code Review**: Team review and approval
+6. **Merge**: Squash and merge to `develop`
+7. **Deploy to Staging**: Automatic deployment
+8. **Release**: Merge `develop` to `main` for production
 
 ### Git Commands Reference
 
 #### Daily Workflow
+
+**Frontend Repository:**
 ```bash
 # Start new feature
 git checkout develop
@@ -63,6 +89,27 @@ git pull origin develop
 git branch -d feature/user-dashboard
 ```
 
+**Backend Repository:**
+```bash
+# Clone backend repo if not already done
+git clone https://github.com/FractalLabsDev/soash-backend.git
+cd soash-backend
+
+# Start new feature
+git checkout develop
+git pull origin develop
+git checkout -b feature/user-endpoints
+
+# Regular commits
+git add .
+git commit -m "feat: add user profile endpoints"
+
+# Push feature branch
+git push origin feature/user-endpoints
+
+# Create pull request (via GitHub UI)
+```
+
 #### Commit Message Format
 ```
 type(scope): description
@@ -78,8 +125,111 @@ Types:
 
 Examples:
 feat(auth): add JWT token refresh
-fix(dashboard): resolve metric calculation bug
-docs(api): update endpoint documentation
+fix(api): resolve user profile validation
+docs(readme): update installation instructions
+```
+
+---
+
+## Repository Coordination
+
+### Frontend-Backend Coordination
+
+**For API Changes:**
+1. **Backend Team**: Create API endpoint in backend repo
+2. **Backend Team**: Update API documentation 
+3. **Frontend Team**: Review API documentation
+4. **Frontend Team**: Implement API integration in frontend
+5. **Both Teams**: Test integration end-to-end
+
+**For New Features:**
+1. **Planning**: Discuss feature requirements in team meetings
+2. **API Design**: Backend team designs API endpoints
+3. **Frontend Design**: Frontend team designs UI components
+4. **Parallel Development**: Both teams work simultaneously
+5. **Integration**: Test and integrate when both sides are ready
+
+**Communication Channels:**
+- **Daily Standups**: Coordinate on blockers and dependencies
+- **Slack/Teams**: Quick questions and updates
+- **GitHub Issues**: Track cross-repo dependencies
+- **Pull Request Reviews**: Cross-team code reviews when needed
+
+### Repository Structure
+
+```
+soash-frontend/          # This repository
+├── src/
+│   ├── components/      # React components
+│   ├── services/        # API integration layer
+│   ├── hooks/           # Custom React hooks
+│   ├── utils/           # Utility functions
+│   └── types/           # TypeScript types
+├── public/
+├── .env.example         # Environment variables example
+└── README.md
+
+soash-backend/           # Separate repository
+├── src/
+│   ├── routes/          # API endpoints
+│   ├── models/          # Database models
+│   ├── services/        # Business logic
+│   ├── middleware/      # Authentication, CORS, etc.
+│   └── utils/           # Utility functions
+├── .env.example         # Environment variables example
+└── README.md
+```
+
+### Environment Setup
+
+**Frontend Repository Setup:**
+```bash
+# Clone the frontend repository
+git clone https://github.com/FractalLabsDev/soash-frontend.git
+cd soash-frontend
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env.local
+# Edit .env.local with your backend URL
+
+# Start development server
+npm run dev
+```
+
+**Backend Repository Setup:**
+```bash
+# Clone the backend repository
+git clone https://github.com/FractalLabsDev/soash-backend.git
+cd soash-backend
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env.development
+# Edit .env.development with your database credentials
+
+# Start development server
+npm run dev
+```
+
+**Environment Variables:**
+
+Frontend (.env.local):
+```
+REACT_APP_API_URL=http://localhost:3001/api
+REACT_APP_ENVIRONMENT=development
+```
+
+Backend (.env.development):
+```
+NODE_ENV=development
+PORT=3001
+DATABASE_URL=postgresql://username:password@localhost:5432/soash_dev
+JWT_SECRET=your-jwt-secret-here
 ```
 
 ---

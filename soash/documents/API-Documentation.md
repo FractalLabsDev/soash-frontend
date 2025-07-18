@@ -4,8 +4,8 @@
 
 This document provides comprehensive API documentation for the Soash platform. It defines all REST endpoints, request/response formats, authentication requirements, and error handling patterns.
 
-**Base URL**: `https://api.soash.com/v1` (Production) | `http://localhost:3001/api/v1` (Development)
-**API Version**: v1
+**Base URL**: `https://api.soash.com/api` (Production) | `http://localhost:3001/api` (Development)
+**Backend Repository**: FractalLabsDev/soash-backend (separate repository)
 **Authentication**: JWT Bearer Token
 
 ---
@@ -19,15 +19,15 @@ Authorization: Bearer <jwt_token>
 ```
 
 ### Token Lifecycle
-- **Access Token**: 15 minutes expiry
-- **Refresh Token**: 7 days expiry
-- **Token Refresh**: Automatic via `/auth/refresh-token` endpoint
+- **Access Token**: Short-lived (configured in backend)
+- **Refresh Token**: Long-lived (configured in backend)
+- **Token Refresh**: Manual via `/auth/refreshToken` endpoint
 
 ---
 
 ## Authentication Endpoints
 
-### POST /auth/register
+### POST /auth/registerAccount
 Register a new user account.
 
 **Request:**
@@ -36,34 +36,20 @@ Register a new user account.
   "email": "user@example.com",
   "password": "securePassword123",
   "firstName": "John",
-  "lastName": "Doe"
+  "lastName": "Doe",
+  "source": "web"
 }
 ```
 
-**Response (201):**
+**Response (200):**
 ```json
 {
   "success": true,
-  "data": {
-    "user": {
-      "id": "uuid",
-      "email": "user@example.com",
-      "firstName": "John",
-      "lastName": "Doe",
-      "isVerified": false,
-      "createdAt": "2024-01-01T00:00:00.000Z"
-    },
-    "tokens": {
-      "accessToken": "jwt_access_token",
-      "refreshToken": "jwt_refresh_token",
-      "expiresIn": 900
-    }
-  },
-  "message": "Registration successful. Please check your email for verification."
+  "message": "Registration successful"
 }
 ```
 
-### POST /auth/login
+### POST /auth/signIn
 Authenticate user and receive tokens.
 
 **Request:**
@@ -84,59 +70,19 @@ Authenticate user and receive tokens.
       "email": "user@example.com",
       "firstName": "John",
       "lastName": "Doe",
-      "isVerified": true,
-      "lastLoginAt": "2024-01-01T00:00:00.000Z"
+      "isActivated": true,
+      "isApproved": false,
+      "isAdmin": false
     },
-    "tokens": {
-      "accessToken": "jwt_access_token",
-      "refreshToken": "jwt_refresh_token",
-      "expiresIn": 900
-    }
-  }
+    "token": "jwt_access_token",
+    "refreshToken": "jwt_refresh_token"
+  },
+  "message": "Sign in successful"
 }
 ```
 
-### POST /auth/refresh-token
-Refresh access token using refresh token.
-
-**Request:**
-```json
-{
-  "refreshToken": "jwt_refresh_token"
-}
-```
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "data": {
-    "accessToken": "new_jwt_access_token",
-    "expiresIn": 900
-  }
-}
-```
-
-### POST /auth/logout
-Logout user and invalidate tokens.
-
-**Request:**
-```json
-{
-  "refreshToken": "jwt_refresh_token"
-}
-```
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "message": "Logout successful"
-}
-```
-
-### POST /auth/forgot-password
-Request password reset email.
+### POST /auth/enterEmail
+Check if an email exists and get user status.
 
 **Request:**
 ```json
@@ -149,84 +95,41 @@ Request password reset email.
 ```json
 {
   "success": true,
-  "message": "Password reset email sent"
-}
-```
-
-### POST /auth/reset-password
-Reset password using token from email.
-
-**Request:**
-```json
-{
-  "token": "password_reset_token",
-  "newPassword": "newSecurePassword123"
-}
-```
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "message": "Password reset successful"
-}
-```
-
----
-
-## User Management Endpoints
-
-### GET /users/profile
-Get current user's profile information.
-
-**Authentication**: Required
-
-**Response (200):**
-```json
-{
-  "success": true,
   "data": {
-    "user": {
-      "id": "uuid",
-      "email": "user@example.com",
-      "firstName": "John",
-      "lastName": "Doe",
-      "isVerified": true,
-      "subscriptionTier": "free",
-      "subscriptionStatus": "active",
-      "createdAt": "2024-01-01T00:00:00.000Z"
-    },
-    "profile": {
-      "id": "uuid",
-      "brandName": "My Brand",
-      "brandDescription": "Description of my brand",
-      "industry": "Technology",
-      "targetAudience": "Tech professionals",
-      "timezone": "America/New_York",
-      "avatarUrl": "https://example.com/avatar.jpg",
-      "onboardingCompleted": true
-    }
-  }
+    "isActivated": true
+  },
+  "message": "Email found"
 }
 ```
 
-### PUT /users/profile
-Update user profile information.
-
-**Authentication**: Required
+### POST /auth/sendVerificationEmail
+Send verification code to user's email.
 
 **Request:**
 ```json
 {
-  "firstName": "John",
-  "lastName": "Doe",
-  "profile": {
-    "brandName": "My Updated Brand",
-    "brandDescription": "Updated description",
-    "industry": "Technology",
-    "targetAudience": "Tech professionals",
-    "timezone": "America/New_York"
-  }
+  "email": "user@example.com"
+}
+```
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "message": "Verification code requested successfully"
+}
+```
+
+### POST /auth/verifyEmail
+Verify email with verification code.
+
+**Request:**
+```json
+{
+  "email": "user@example.com",
+  "when": "auth",
+  "code": "123456",
+  "is_test": false
 }
 ```
 
@@ -240,35 +143,25 @@ Update user profile information.
       "email": "user@example.com",
       "firstName": "John",
       "lastName": "Doe",
-      "updatedAt": "2024-01-01T00:00:00.000Z"
+      "isActivated": true,
+      "isApproved": false,
+      "isAdmin": false
     },
-    "profile": {
-      "id": "uuid",
-      "brandName": "My Updated Brand",
-      "brandDescription": "Updated description",
-      "industry": "Technology",
-      "targetAudience": "Tech professionals",
-      "timezone": "America/New_York",
-      "updatedAt": "2024-01-01T00:00:00.000Z"
-    }
-  }
+    "token": "jwt_access_token",
+    "refreshToken": "jwt_refresh_token"
+  },
+  "message": "Account activated successfully"
 }
 ```
 
----
-
-## Social Platform Endpoints
-
-### POST /social/connect/instagram
-Connect Instagram account via OAuth.
-
-**Authentication**: Required
+### POST /auth/updatePassword
+Update user password (requires authentication).
 
 **Request:**
 ```json
 {
-  "code": "oauth_authorization_code",
-  "redirectUri": "https://app.soash.com/callback/instagram"
+  "email": "user@example.com",
+  "password": "newSecurePassword123"
 }
 ```
 
@@ -277,641 +170,134 @@ Connect Instagram account via OAuth.
 {
   "success": true,
   "data": {
-    "account": {
+    "user": {
       "id": "uuid",
-      "platform": "instagram",
-      "platformUserId": "instagram_user_id",
-      "username": "johndoe",
-      "displayName": "John Doe",
-      "avatarUrl": "https://instagram.com/avatar.jpg",
-      "followerCount": 5000,
-      "followingCount": 1200,
-      "isActive": true,
-      "connectedAt": "2024-01-01T00:00:00.000Z"
-    }
-  },
-  "message": "Instagram account connected successfully"
-}
-```
-
-### POST /social/connect/facebook
-Connect Facebook page via OAuth.
-
-**Authentication**: Required
-
-**Request:**
-```json
-{
-  "code": "oauth_authorization_code",
-  "redirectUri": "https://app.soash.com/callback/facebook"
-}
-```
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "data": {
-    "account": {
-      "id": "uuid",
-      "platform": "facebook",
-      "platformUserId": "facebook_page_id",
-      "username": "mypage",
-      "displayName": "My Business Page",
-      "avatarUrl": "https://facebook.com/avatar.jpg",
-      "followerCount": 2500,
-      "followingCount": 0,
-      "isActive": true,
-      "connectedAt": "2024-01-01T00:00:00.000Z"
-    }
-  },
-  "message": "Facebook page connected successfully"
-}
-```
-
-### GET /social/accounts
-Get all connected social media accounts.
-
-**Authentication**: Required
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "data": {
-    "accounts": [
-      {
-        "id": "uuid",
-        "platform": "instagram",
-        "platformUserId": "instagram_user_id",
-        "username": "johndoe",
-        "displayName": "John Doe",
-        "avatarUrl": "https://instagram.com/avatar.jpg",
-        "followerCount": 5000,
-        "followingCount": 1200,
-        "isActive": true,
-        "lastSyncedAt": "2024-01-01T00:00:00.000Z",
-        "connectedAt": "2024-01-01T00:00:00.000Z"
-      }
-    ]
-  }
-}
-```
-
-### POST /social/sync/:accountId
-Trigger manual sync for a social account.
-
-**Authentication**: Required
-
-**Path Parameters:**
-- `accountId` (string): Social account UUID
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "data": {
-    "syncJobId": "uuid",
-    "status": "queued",
-    "estimatedDuration": "2-5 minutes"
-  },
-  "message": "Sync job initiated"
-}
-```
-
-### DELETE /social/disconnect/:accountId
-Disconnect a social media account.
-
-**Authentication**: Required
-
-**Path Parameters:**
-- `accountId` (string): Social account UUID
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "message": "Account disconnected successfully"
-}
-```
-
----
-
-## Analytics Endpoints
-
-### GET /analytics/overview
-Get dashboard overview analytics.
-
-**Authentication**: Required
-
-**Query Parameters:**
-- `dateRange` (string): "7d", "30d", "90d", "1y" (default: "30d")
-- `platforms` (string[]): Platform filters (optional)
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "data": {
-    "overview": {
-      "totalPosts": 45,
-      "totalEngagement": 12500,
-      "averageEngagementRate": 4.2,
-      "totalReach": 85000,
-      "totalImpressions": 125000,
-      "followerGrowth": 250,
-      "topPlatform": "instagram"
+      "email": "user@example.com",
+      "firstName": "John",
+      "lastName": "Doe",
+      "isActivated": true,
+      "isApproved": false,
+      "isAdmin": false
     },
-    "platformBreakdown": [
-      {
-        "platform": "instagram",
-        "posts": 30,
-        "engagement": 8500,
-        "engagementRate": 4.5,
-        "reach": 55000,
-        "impressions": 80000
-      },
-      {
-        "platform": "facebook",
-        "posts": 15,
-        "engagement": 4000,
-        "engagementRate": 3.8,
-        "reach": 30000,
-        "impressions": 45000
-      }
-    ],
-    "trends": {
-      "engagementTrend": [
-        { "date": "2024-01-01", "value": 4.1 },
-        { "date": "2024-01-02", "value": 4.3 },
-        { "date": "2024-01-03", "value": 4.2 }
-      ],
-      "reachTrend": [
-        { "date": "2024-01-01", "value": 2800 },
-        { "date": "2024-01-02", "value": 2950 },
-        { "date": "2024-01-03", "value": 2850 }
-      ]
-    }
-  }
-}
-```
-
-### GET /analytics/posts
-Get post performance analytics.
-
-**Authentication**: Required
-
-**Query Parameters:**
-- `page` (number): Page number (default: 1)
-- `limit` (number): Items per page (default: 20, max: 100)
-- `dateRange` (string): "7d", "30d", "90d", "1y" (default: "30d")
-- `platform` (string): Platform filter (optional)
-- `sortBy` (string): "engagement", "reach", "date" (default: "date")
-- `sortOrder` (string): "asc", "desc" (default: "desc")
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "data": {
-    "posts": [
-      {
-        "id": "uuid",
-        "platform": "instagram",
-        "platformPostId": "instagram_post_id",
-        "contentType": "image",
-        "caption": "Check out this amazing content!",
-        "mediaUrls": ["https://instagram.com/image.jpg"],
-        "hashtags": ["#content", "#amazing"],
-        "postedAt": "2024-01-01T00:00:00.000Z",
-        "metrics": {
-          "likesCount": 150,
-          "commentsCount": 12,
-          "sharesCount": 8,
-          "savesCount": 25,
-          "reach": 2800,
-          "impressions": 3200,
-          "engagementRate": 4.2
-        },
-        "performanceLevel": "high"
-      }
-    ]
+    "token": "jwt_access_token",
+    "refreshToken": "jwt_refresh_token"
   },
-  "pagination": {
-    "page": 1,
-    "limit": 20,
-    "total": 45,
-    "totalPages": 3
-  }
+  "message": "Password updated successfully"
 }
 ```
 
-### GET /analytics/insights
-Get AI-generated insights.
+### POST /auth/refreshToken
+Refresh access token using refresh token.
 
-**Authentication**: Required
+**Request:**
+```json
+{
+  "refreshToken": "jwt_refresh_token"
+}
+```
 
-**Query Parameters:**
-- `page` (number): Page number (default: 1)
-- `limit` (number): Items per page (default: 10, max: 50)
-- `type` (string): "performance", "trend", "recommendation" (optional)
-- `unreadOnly` (boolean): Show only unread insights (default: false)
+**Headers:**
+```
+Authorization: Bearer <expired_jwt_token>
+```
 
 **Response (200):**
 ```json
 {
-  "success": true,
-  "data": {
-    "insights": [
-      {
-        "id": "uuid",
-        "type": "performance",
-        "title": "Your video content is performing 40% better than images",
-        "description": "Based on your last 30 posts, video content generates significantly higher engagement rates (5.2% vs 3.7% for images).",
-        "priority": "high",
-        "isRead": false,
-        "createdAt": "2024-01-01T00:00:00.000Z"
-      },
-      {
-        "id": "uuid",
-        "type": "trend",
-        "title": "Best posting time identified",
-        "description": "Your audience is most active on weekdays between 2-4 PM EST, showing 25% higher engagement during these hours.",
-        "priority": "medium",
-        "isRead": true,
-        "createdAt": "2024-01-01T00:00:00.000Z"
-      }
-    ]
-  },
-  "pagination": {
-    "page": 1,
-    "limit": 10,
-    "total": 25,
-    "totalPages": 3
-  }
-}
-```
-
-### PUT /analytics/insights/:insightId/read
-Mark an insight as read.
-
-**Authentication**: Required
-
-**Path Parameters:**
-- `insightId` (string): Insight UUID
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "message": "Insight marked as read"
-}
-```
-
-### GET /analytics/recommendations
-Get AI content recommendations.
-
-**Authentication**: Required
-
-**Query Parameters:**
-- `page` (number): Page number (default: 1)
-- `limit` (number): Items per page (default: 10, max: 50)
-- `type` (string): "content_idea", "posting_time", "hashtag" (optional)
-- `unused` (boolean): Show only unused recommendations (default: false)
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "data": {
-    "recommendations": [
-      {
-        "id": "uuid",
-        "type": "content_idea",
-        "title": "Behind-the-scenes content idea",
-        "description": "Share your morning routine or workspace setup. This type of content typically generates 30% more engagement for your audience.",
-        "contentBrief": "Create a short video showing your daily morning routine, focusing on productivity tips. Include 3-5 actionable steps your audience can implement.",
-        "isUsed": false,
-        "feedbackScore": null,
-        "createdAt": "2024-01-01T00:00:00.000Z"
-      }
-    ]
-  },
-  "pagination": {
-    "page": 1,
-    "limit": 10,
-    "total": 15,
-    "totalPages": 2
-  }
+  "token": "new_jwt_access_token",
+  "refreshToken": "new_jwt_refresh_token"
 }
 ```
 
 ---
 
-## AI-Powered Endpoints
+## Health Endpoints
 
-### POST /ai/analyze
-Analyze content performance using AI.
-
-**Authentication**: Required
-
-**Request:**
-```json
-{
-  "postIds": ["uuid1", "uuid2"],
-  "analysisType": "performance" | "trend" | "comparison"
-}
-```
+### GET /health
+Check API health status.
 
 **Response (200):**
 ```json
 {
-  "success": true,
-  "data": {
-    "analysis": {
-      "summary": "Your recent posts show strong performance with video content, particularly educational tutorials.",
-      "insights": [
-        {
-          "type": "performance",
-          "title": "Video content outperforming images",
-          "description": "Video posts generate 40% higher engagement rates",
-          "confidence": 0.85
-        }
-      ],
-      "recommendations": [
-        {
-          "action": "Increase video content frequency",
-          "reasoning": "Video content shows consistently higher engagement",
-          "expectedImpact": "25-30% engagement increase"
-        }
-      ]
-    }
-  }
+  "status": "ok"
 }
 ```
 
-### POST /ai/generate-brief
-Generate AI content brief.
+### GET /health/error
+Test error handling (development only).
 
-**Authentication**: Required
-
-**Request:**
+**Response (500):**
 ```json
 {
-  "contentType": "post",
-  "platform": "instagram",
-  "topic": "productivity tips",
-  "audience": "professionals",
-  "tone": "educational"
-}
-```
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "data": {
-    "brief": {
-      "id": "uuid",
-      "title": "5 Productivity Tips for Busy Professionals",
-      "outline": "1. Time blocking technique\n2. Priority matrix method\n3. Automation tools\n4. Focused work sessions\n5. Energy management",
-      "suggestedHooks": [
-        "Struggling to stay productive? These 5 tips changed my game 👇",
-        "POV: You're drowning in tasks but getting nothing done..."
-      ],
-      "suggestedCTAs": [
-        "Which tip will you try first? Let me know in the comments!",
-        "Save this post for later and share with someone who needs it"
-      ],
-      "hashtags": ["#productivity", "#professionals", "#timemanagement", "#tips", "#workflow"],
-      "visualSuggestions": [
-        "Split-screen showing chaos vs organized workspace",
-        "Step-by-step infographic of the 5 tips"
-      ],
-      "createdAt": "2024-01-01T00:00:00.000Z"
-    }
-  }
-}
-```
-
-### POST /ai/feedback
-Provide feedback on AI recommendations.
-
-**Authentication**: Required
-
-**Request:**
-```json
-{
-  "recommendationId": "uuid",
-  "rating": 5,
-  "feedback": "Great recommendation, very helpful!"
-}
-```
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "message": "Feedback submitted successfully"
+  "error": "Test error"
 }
 ```
 
 ---
 
-## Affiliate Program Endpoints
+## User Model
 
-### POST /affiliate/register
-Register as an affiliate.
+The User model in the backend has the following structure:
 
-**Authentication**: Required
-
-**Request:**
-```json
-{
-  "agreeToTerms": true
-}
-```
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "data": {
-    "referralCode": {
-      "id": "uuid",
-      "code": "USER123-REF",
-      "isActive": true,
-      "createdAt": "2024-01-01T00:00:00.000Z"
-    }
-  },
-  "message": "Affiliate registration successful"
-}
-```
-
-### GET /affiliate/dashboard
-Get affiliate dashboard data.
-
-**Authentication**: Required
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "data": {
-    "referralCode": "USER123-REF",
-    "stats": {
-      "totalReferrals": 12,
-      "conversions": 8,
-      "conversionRate": 66.7,
-      "pendingCommissions": 120.00,
-      "totalCommissions": 450.00
-    },
-    "recentReferrals": [
-      {
-        "id": "uuid",
-        "signupDate": "2024-01-01T00:00:00.000Z",
-        "status": "converted",
-        "commissionAmount": 15.00
-      }
-    ]
-  }
-}
-```
-
-### GET /affiliate/export
-Export affiliate data for payments.
-
-**Authentication**: Required (Admin only)
-
-**Response (200):**
-```json
-{
-  "success": true,
-  "data": {
-    "exportUrl": "https://api.soash.com/exports/affiliate-2024-01.csv",
-    "expiresAt": "2024-01-01T01:00:00.000Z"
-  }
+```typescript
+interface User {
+  id: string;              // UUID
+  email: string;           // Unique email address
+  password: string;        // Hashed password
+  firstName?: string;      // Optional first name
+  lastName?: string;       // Optional last name
+  note?: string;           // Optional notes
+  isActivated: boolean;    // Email verification status
+  isApproved: boolean;     // Admin approval status
+  isAdmin: boolean;        // Admin privileges
+  metadata?: object;       // Additional metadata
+  source?: string;         // Registration source
+  createdAt?: Date;        // Creation timestamp
 }
 ```
 
 ---
 
-## Error Responses
+## Error Handling
 
-### Error Format
-All error responses follow this format:
+All endpoints return errors in the following format:
 
+**Error Response:**
 ```json
 {
   "success": false,
-  "error": {
-    "code": "ERROR_CODE",
-    "message": "Human-readable error message",
-    "details": {
-      "field": "Additional error details"
-    }
-  }
+  "message": "Error message describing what went wrong"
 }
 ```
 
 ### Common Error Codes
+- **400**: Bad Request - Invalid request format or missing required fields
+- **401**: Unauthorized - Invalid credentials or missing/invalid token
+- **404**: Not Found - Resource not found (e.g., email not found)
+- **500**: Internal Server Error - Server-side error
 
-#### Authentication Errors (401)
-- `UNAUTHORIZED`: Missing or invalid token
-- `TOKEN_EXPIRED`: Access token has expired
-- `INVALID_CREDENTIALS`: Invalid email/password combination
-
-#### Validation Errors (400)
-- `VALIDATION_ERROR`: Request validation failed
-- `MISSING_REQUIRED_FIELD`: Required field is missing
-- `INVALID_FORMAT`: Field format is invalid
-
-#### Authorization Errors (403)
-- `INSUFFICIENT_PERMISSIONS`: User lacks required permissions
-- `ACCOUNT_SUSPENDED`: User account is suspended
-
-#### Resource Errors (404)
-- `RESOURCE_NOT_FOUND`: Requested resource doesn't exist
-- `USER_NOT_FOUND`: User account not found
-
-#### Rate Limiting (429)
-- `RATE_LIMIT_EXCEEDED`: Too many requests
-
-#### Server Errors (500)
-- `INTERNAL_SERVER_ERROR`: Unexpected server error
-- `DATABASE_ERROR`: Database operation failed
-- `EXTERNAL_API_ERROR`: Third-party service error
+### Authentication Errors
+- **401**: "Invalid email or password" - Login failed
+- **401**: "A user already exists with this email address" - Registration failed  
+- **401**: "A user with this email address does not exist" - Email not found
+- **401**: "Incorrect verification code" - Invalid verification code
+- **401**: "No token attached" - Missing authorization header
+- **401**: "Invalid token" - Token verification failed
 
 ---
 
-## Request/Response Headers
+## Integration Notes
 
-### Common Request Headers
-```
-Content-Type: application/json
-Authorization: Bearer <jwt_token>
-User-Agent: Soash-App/1.0
-```
+### Frontend Integration
+1. **Environment Variables**: Set `REACT_APP_API_URL` to point to backend
+2. **CORS**: Backend must be configured to allow frontend origin
+3. **Authentication**: Store JWT tokens securely (HttpOnly cookies recommended)
+4. **Token Refresh**: Implement automatic token refresh on 401 responses
 
-### Common Response Headers
-```
-Content-Type: application/json
-Cache-Control: no-cache
-X-RateLimit-Limit: 100
-X-RateLimit-Remaining: 99
-X-RateLimit-Reset: 1640995200
-```
+### Development Setup
+1. **Backend**: Clone and run `FractalLabsDev/soash-backend`
+2. **Database**: Set up PostgreSQL with proper credentials
+3. **Environment**: Configure `.env` files for both repos
+4. **CORS**: Update backend CORS settings for frontend URL
 
----
-
-## Rate Limiting
-
-### Limits (Not implemented in MVP)
-- **Authentication endpoints**: 5 requests per minute
-- **General API endpoints**: 100 requests per minute
-- **Analytics endpoints**: 50 requests per minute
-
-### Rate Limit Headers
-```
-X-RateLimit-Limit: 100
-X-RateLimit-Remaining: 99
-X-RateLimit-Reset: 1640995200
-```
-
----
-
-## Pagination
-
-### Query Parameters
-- `page` (number): Page number (1-based)
-- `limit` (number): Items per page (max varies by endpoint)
-
-### Response Format
-```json
-{
-  "success": true,
-  "data": {
-    "items": []
-  },
-  "pagination": {
-    "page": 1,
-    "limit": 20,
-    "total": 100,
-    "totalPages": 5
-  }
-}
-```
-
----
-
-## Webhook Endpoints (Future)
-
-### POST /webhooks/instagram
-Handle Instagram webhook events.
-
-### POST /webhooks/facebook
-Handle Facebook webhook events.
-
----
-
-This API documentation provides a comprehensive guide for frontend developers to integrate with the Soash backend API during the 3-month development sprint.
+This documentation reflects the current state of the soash-backend repository and should be used as the reference for frontend integration.

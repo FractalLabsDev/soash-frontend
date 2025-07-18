@@ -5,7 +5,8 @@
 This document defines the technical architecture for the Soash platform, a lean AI-powered social media intelligence application. It outlines the technology stack, system design, data flow, and implementation patterns to ensure consistent development across the team.
 
 **Target Timeline**: 3-month lean sprint
-**Architecture Philosophy**: Monolithic, simple, scalable
+**Architecture Philosophy**: Frontend-backend separation, simple, scalable
+**Backend Repository**: FractalLabsDev/soash-backend (separate repository)
 
 ---
 
@@ -27,26 +28,27 @@ This document defines the technical architecture for the Soash platform, a lean 
 - **Design Tokens**: CSS variables + Tailwind configuration
 
 ### Backend
-- **Runtime**: Node.js 18+
+- **Runtime**: Node.js 22+
 - **Framework**: Express.js with TypeScript
 - **Database**: PostgreSQL 14+
-- **ORM**: Prisma (type-safe database access)
+- **ORM**: Sequelize (existing backend uses Sequelize)
 - **Authentication**: JWT (JSON Web Tokens)
 - **Session Storage**: Database sessions (no Redis for MVP)
-- **Job Queue**: Simple background jobs (no Bull/Redis)
-- **File Storage**: Local storage (no S3 for MVP)
+- **Repository**: Separate backend repository (FractalLabsDev/soash-backend)
+- **Integration**: Frontend connects to backend APIs via REST endpoints
+- **CORS**: Configured to allow frontend requests
 
-### AI/ML Integration
-- **LLM**: OpenAI GPT-4 API (direct integration)
+### AI/ML Integration (Future Phase)
+- **LLM**: OpenAI GPT-4 API (to be integrated in backend)
 - **Pattern Recognition**: Rule-based logic + OpenAI analysis
 - **Data Processing**: Simple batch processing
 - **Content Generation**: OpenAI API for content briefs
 
-### Third-Party APIs
-- **Instagram**: Basic Display API + Graph API
-- **Facebook**: Graph API (pages_read_engagement scope)
-- **Email**: SendGrid or similar service
-- **Payments**: Manual processing (CSV export)
+### Third-Party APIs (Future Phase)
+- **Instagram**: Basic Display API + Graph API (to be added to backend)
+- **Facebook**: Graph API (pages_read_engagement scope) (to be added to backend)
+- **Email**: SendGrid or similar service (existing in backend)
+- **Payments**: Manual processing (CSV export) (future feature)
 
 ### Development Tools
 - **Language**: TypeScript (strict mode)
@@ -65,15 +67,33 @@ This document defines the technical architecture for the Soash platform, a lean 
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   React Client  │    │  Express API    │    │   PostgreSQL    │
 │   (Frontend)    │◄──►│   (Backend)     │◄──►│   (Database)    │
+│  This Repo      │    │  Separate Repo  │    │   Sequelize     │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
                               │
                               ▼
                     ┌─────────────────┐
                     │  External APIs  │
-                    │ - Instagram API │
-                    │ - Facebook API  │
-                    │ - OpenAI API    │
+                    │ - Email Service │
+                    │ (Future: Social)│
+                    │ (Future: OpenAI)│
                     └─────────────────┘
+```
+
+### Repository Structure
+```
+soash-frontend/        # This repository
+├── src/
+│   ├── components/    # React components
+│   ├── services/      # API integration layer
+│   ├── hooks/         # Custom React hooks
+│   └── utils/         # Utility functions
+
+soash-backend/         # Separate repository
+├── src/
+│   ├── routes/        # API endpoints
+│   ├── models/        # Sequelize models
+│   ├── services/      # Business logic
+│   └── middleware/    # Auth, CORS, etc.
 ```
 
 ### Directory Structure
